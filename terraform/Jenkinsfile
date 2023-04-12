@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage("git checkout") {
             steps {
-                git branch: 'main', url: 'https://github.com/FaiyazJambotkar/semicolon-pipeline.git'
+                git branch: 'jenkins-ci', url: 'https://github.com/FaiyazJambotkar/semicolon-pipeline.git'
             }
         }
 
