@@ -39,8 +39,9 @@ pipeline {
                         if (!params.confirmDestroy) {
                             error('You did not confirm the destroy operation')
                         }
-                        else if (params.confirmDestroy == true)
+                        else {
                             sh 'terraform destroy --auto-approve'
+                        }
                     }
                 }
             }
