@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage("git checkout") {
             steps {
-                git branch: 'jenkins-ci', url: 'https://github.com/FaiyazJambotkar/semicolon-pipeline.git'
+                git branch: 'jenkins-pipeline', url: 'https://github.com/FaiyazJambotkar/semicolon-pipeline.git'
             }
         }
 
@@ -25,6 +25,15 @@ pipeline {
                         terraform init
                         terraform apply -auto-approve -var "private_key_path=${PRIVATE_KEY}"
                     '''
+
+                    input message: 'Do you want to do Terraform Destroy?', ok: 'Confirm', submitterParameter: 'PROCEED', parameters: [
+                    booleanParam(defaultValue: false, description: 'Check this box to confirm Terraform Destroy', name: 'confirmDestroy')
+                    ]
+                    script {
+                        if (params.confirmDestroy == true) {
+                            error('You did not confirm the destroy operation')
+                        }
+                    }
                 }
             }
         }
@@ -32,19 +41,10 @@ pipeline {
         stage('Destroy') {
             steps {
                 dir('terraform') {
-                input message: 'Do you want to do Terraform Destroy?', ok: 'Confirm', submitterParameter: 'PROCEED', parameters: [
-                    booleanParam(defaultValue: false, description: 'Check this box to confirm Terraform Destroy', name: 'confirmDestroy')
-                ]
-                script {
-                    if (params.confirmDestroy == true) {
-                    // echo('You did not confirm the destroy operation')
-                    // } 
-                    // else {
-                        sh 'terraform destroy --auto-approve'
-                    }
-                }
+                    sh 'terraform destroy --auto-approve'
                 }
             }
+            
         }
 
     }
