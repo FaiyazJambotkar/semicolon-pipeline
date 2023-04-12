@@ -1,0 +1,49 @@
+
+
+pipeline {
+    agent any
+
+    tools {
+    terraform 'terraform-11'
+    }
+
+    environment {
+        PRIVATE_KEY = credentials('aws-private-key')
+    }
+
+    stages {
+        stage("git checkout") {
+            steps {
+                git branch: 'main', url: 'https://github.com/FaiyazJambotkar/semicolon-pipeline.git'
+            }
+        }
+
+        stage("terraform init") {
+            steps {
+                sh 'terraform init'
+            }
+        }
+
+        stage("terraform apply") {
+            steps { 
+                sh 'terraform --auto-approve -var private_key_path="$PRIVATE_KEY"'
+            }
+        }
+
+        stage('Destroy') {
+            steps {
+                input message: 'Do you want to do Terraform Destroy?', ok: 'Yes', submitterParameter: 'PROCEED', parameters: [
+                    booleanParam(defaultValue: false, description: 'Check this box to confirm Terrafrom Destroy', name: 'confirmDestroy')
+                ]
+                script {
+                    if (!params.confirmDestroy) {
+                        error('You did not confirm the destroy operation')
+                    }
+                    else 
+                        sh 'terraform destroy --auto-approve'
+                }
+            }
+        }
+
+    }
+}

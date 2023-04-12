@@ -1,0 +1,5 @@
+resource "aws_route_table_association" "terra-rt-assoc" {
+
+  subnet_id      = var.subnet_id
+  route_table_id = var.rt_id
+}
