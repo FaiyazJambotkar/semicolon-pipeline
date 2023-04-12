@@ -18,29 +18,30 @@ pipeline {
             }
         }
 
-        stage("terraform init") {
-            steps {
-                sh 'terraform init'
-            }
-        }
-
         stage("terraform apply") {
             steps { 
-                sh 'terraform --auto-approve -var private_key_path="$PRIVATE_KEY"'
+                dir('terraform') {
+                    sh '''
+                        terraform init
+                        terraform apply -auto-approve -var "private_key_path=${PRIVATE_KEY}"
+                    '''
+                }
             }
         }
 
         stage('Destroy') {
             steps {
-                input message: 'Do you want to do Terraform Destroy?', ok: 'Yes', submitterParameter: 'PROCEED', parameters: [
-                    booleanParam(defaultValue: false, description: 'Check this box to confirm Terrafrom Destroy', name: 'confirmDestroy')
-                ]
-                script {
-                    if (!params.confirmDestroy) {
-                        error('You did not confirm the destroy operation')
+                dir('terraform') {
+                    input message: 'Do you want to do Terraform Destroy?', ok: 'Yes', submitterParameter: 'PROCEED', parameters: [
+                        booleanParam(defaultValue: false, description: 'Check this box to confirm Terrafrom Destroy', name: 'confirmDestroy')
+                    ]
+                    script {
+                        if (!params.confirmDestroy) {
+                            error('You did not confirm the destroy operation')
+                        }
+                        else 
+                            sh 'terraform destroy --auto-approve'
                     }
-                    else 
-                        sh 'terraform destroy --auto-approve'
                 }
             }
         }
