@@ -30,7 +30,7 @@ pipeline {
                     booleanParam(defaultValue: false, description: 'Check this box to confirm Terraform Destroy', name: 'confirmDestroy')
                     ]
                     script {
-                        if (!params.confirmDestroy) {
+                        if (params.confirmDestroy == false) {
                             error('You did not confirm the destroy operation')
                         }
                     }
