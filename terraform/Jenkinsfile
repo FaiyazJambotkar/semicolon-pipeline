@@ -32,15 +32,15 @@ pipeline {
         stage('Destroy') {
             steps {
                 dir('terraform') {
-                input message: 'Do you want to do Terraform Destroy?', ok: 'Yes', submitterParameter: 'PROCEED', parameters: [
+                input message: 'Do you want to do Terraform Destroy?', ok: 'Confirm', submitterParameter: 'PROCEED', parameters: [
                     booleanParam(defaultValue: false, description: 'Check this box to confirm Terraform Destroy', name: 'confirmDestroy')
                 ]
                 script {
-                    if (!params.confirmDestroy) {
-                    error('You did not confirm the destroy operation')
-                    } 
-                    else {
-                    sh 'terraform destroy --auto-approve'
+                    if (params.confirmDestroy) {
+                    // echo('You did not confirm the destroy operation')
+                    // } 
+                    // else {
+                        sh 'terraform destroy --auto-approve'
                     }
                 }
                 }
