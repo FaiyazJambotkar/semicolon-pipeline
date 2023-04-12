@@ -36,7 +36,6 @@ variable "connection_username" {
 
 variable "private_key_path" {
   type = string
-  # default = "./f-terra-kp.pem"
 }
 
 variable "sg_id" {}
