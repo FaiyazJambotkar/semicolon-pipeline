@@ -15,7 +15,7 @@ variable "ec2_auto_assign_pub_ip" {
 
 variable "ec2_tag_name" {
   type    = string
-  default = "f-terra-ec2"
+  default = "SemiColon-ec2"
 }
 
 
